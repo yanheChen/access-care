@@ -5,7 +5,7 @@
 1. Install the required dependencies:
 ```bash
 # Create virtual environment
-python -m venv myenv
+python3 -m venv myenv
 
 # Activate virtual environment
 source myenv/bin/activate
