@@ -31,6 +31,7 @@ import {
   NumberDecrementStepper
 } from '@chakra-ui/react';
 import { InfoIcon, SearchIcon, StarIcon } from '@chakra-ui/icons';
+import {APIProvider, Map, MapCameraChangedEvent} from '@vis.gl/react-google-maps';
 
 // Main Healthcare Portal Component
 const HealthcarePortal = () => {
@@ -41,6 +42,7 @@ const HealthcarePortal = () => {
     'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
     'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia','Texas'
   ];
+  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
   useEffect(() => {
     const fetchUserState = async () => {
@@ -191,6 +193,17 @@ const HealthcarePortal = () => {
           </TabPanels>
         </Tabs>
       </VStack>
+      <APIProvider apiKey={googleMapsApiKey}>
+        <div style={{ height: '400px', width: '100%' }}>
+          <Map
+              defaultZoom={13}
+              defaultCenter={{ lat: -33.860664, lng: 151.208138 }}
+              gestureHandling={'greedy'}
+              disableDefaultUI={true}
+          >
+          </Map>
+        </div>
+      </APIProvider>
     </Container>
   );
 };
