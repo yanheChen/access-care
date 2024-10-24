@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect }from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import {
@@ -23,16 +23,43 @@ import {
   SimpleGrid,
   List,
   ListItem,
-  useColorModeValue
+  useColorModeValue,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper
 } from '@chakra-ui/react';
 import { InfoIcon, SearchIcon, StarIcon } from '@chakra-ui/icons';
 
 // Main Healthcare Portal Component
 const HealthcarePortal = () => {
+  const [selectedState, setSelectedState] = useState('');
+  const [gestationWeeks, setGestationWeeks] = useState(0);
+  const [loading, setLoading] = useState(true);
   const states = [
     'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-    'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia'
+    'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia','Texas'
   ];
+
+  useEffect(() => {
+    const fetchUserState = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        const userState = data.region;
+        if (states.includes(userState)) {
+          setSelectedState(userState);
+        }
+      } catch (error) {
+        console.error('Error fetching user location:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserState();
+  }, []);
 
   const healthcarePolicies = {
     California: {
@@ -63,17 +90,24 @@ const HealthcarePortal = () => {
           </CardHeader>
           <CardBody>
             <HStack spacing={4}>
-              <Select placeholder="Select your state" maxW="200px">
+              <Select placeholder="Select your state" maxW="200px" value={selectedState} onChange={(e) => setSelectedState(e.target.value)} isDisabled={loading}>
                 {states.map((state) => (
                   <option key={state} value={state}>{state}</option>
                 ))}
               </Select>
+              <NumberInput maxW="150px" min={0} max={42} onChange={(valueString) => setGestationWeeks(parseInt(valueString))}>
+                <NumberInputField placeholder="Gestation" />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+              <Text fontSize="sm" color="gray.500">Weeks</Text>
               <Input placeholder="Search healthcare information..." />
               <Button colorScheme="blue">Search</Button>
             </HStack>
           </CardBody>
         </Card>
-
         {/* Main Content Tabs */}
         <Tabs variant="enclosed" colorScheme="blue">
           <TabList>
@@ -92,7 +126,7 @@ const HealthcarePortal = () => {
                 <CardBody>
                   <VStack align="stretch" spacing={4}>
                     <Text>
-                      Please select a state to view healthcare policies.
+                      Please select a state to view healthcare policies.    
                     </Text>
                     <Box>
                       <Heading size="sm" mb={2}>Key Programs:</Heading>
